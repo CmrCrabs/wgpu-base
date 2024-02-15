@@ -15,7 +15,6 @@ const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8UnormSrgb;
 struct Vertex {
   position: Vec3,
   tex_coords: Vec2,
-  normal: Vec3,
 }
 
 struct Camera {
@@ -145,7 +144,6 @@ fn main() -> Result {
     .map(|v| Vertex {
       position: v.position.into(),
       tex_coords: Vec2::new(v.texture[0], 1.0 - v.texture[1]),
-      normal: v.normal.into(),
     })
     .collect::<Vec<_>>();
 
@@ -269,7 +267,7 @@ fn main() -> Result {
       buffers: &[wgpu::VertexBufferLayout {
         array_stride: mem::size_of::<Vertex>() as _,
         step_mode: wgpu::VertexStepMode::Vertex,
-        attributes: &wgpu::vertex_attr_array![0 => Float32x3, 1 => Float32x2, 2 => Float32x3],
+        attributes: &wgpu::vertex_attr_array![0 => Float32x3, 1 => Float32x2],
       }],
     },
     fragment: Some(wgpu::FragmentState {
@@ -344,7 +342,7 @@ fn main() -> Result {
         render_pass.set_vertex_buffer(0, vtx_buf.slice(..));
         render_pass.set_index_buffer(idx_buf.slice(..), wgpu::IndexFormat::Uint32);
 
-        render_pass.draw_indexed(0..(obj.indices.len() as _), 0, 0..32);
+        render_pass.draw_indexed(0..(obj.indices.len() as _), 0, 0..1);
         drop(render_pass);
         queue.submit([encoder.finish()]);
         surface.present();
